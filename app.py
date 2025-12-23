@@ -238,31 +238,45 @@ def get_menu_categories() -> str:
         return f"Error getting categories: {str(e)}"
 
 
-def find_menu_item(item_name: str):
-    """Find a menu item or deal by name."""
+def find_menu_item(user_message: str):
+    """
+    Find a menu item or deal by checking if any known item name exists in the user message.
+    Returns the first matching item found.
+    """
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         
-        # First check menu_items
-        cursor.execute(
-            "SELECT name, category, sizes, price FROM menu_items WHERE name LIKE ?",
-            (f"%{item_name}%",)
-        )
-        row = cursor.fetchone()
+        # Fetch all possible items (Menu Items + Deals)
+        # We fetch: name, category, sizes, price
+        all_items = []
         
-        # If not found in menu_items, check deals
-        if not row:
-            cursor.execute(
-                "SELECT name, 'Deals' as category, NULL as sizes, price FROM deals WHERE name LIKE ?",
-                (f"%{item_name}%",)
-            )
-            row = cursor.fetchone()
-        
+        # 1. Menu Items
+        cursor.execute("SELECT name, category, sizes, price FROM menu_items")
+        for row in cursor.fetchall():
+            all_items.append(row)
+            
+        # 2. Deals
+        cursor.execute("SELECT name, 'Deals', NULL, price FROM deals")
+        for row in cursor.fetchall():
+            all_items.append(row)
+            
         conn.close()
-        return row
         
-    except Exception:
+        # Sort items by name length (descending) to match "Spicy Chicken Pizza" before "Chicken Pizza"
+        all_items.sort(key=lambda x: len(x[0]), reverse=True)
+        
+        message_lower = user_message.lower()
+        
+        for item in all_items:
+            # item[0] is name
+            if item[0].lower() in message_lower:
+                return item
+                
+        return None
+        
+    except Exception as e:
+        print(f"Error finding item: {e}")
         return None
 
 
