@@ -12,8 +12,11 @@ import sqlite3
 import json
 from pathlib import Path
 
-# Database file path
-DB_PATH = Path(__file__).parent / "broadway_pizza.db"
+# Import centralized configuration
+from config import DB_PATH, VALID_TABLES, setup_logging
+
+# Setup logging
+logger = setup_logging(__name__)
 
 # ============================================================================
 # COMPREHENSIVE KNOWLEDGE BASE
@@ -33,7 +36,7 @@ KNOWLEDGE_BASE = {
             "Catering",
             "Corporate Orders",
             "Birthday Orders",
-            "Franchise Support"
+             "Franchise Support"
         ],
         "payment_methods": [
             "Cash on Delivery",
@@ -66,7 +69,7 @@ KNOWLEDGE_BASE = {
             "name": "Mama Mia Classic",
             "description": "Smoked Chicken, Pepperoni, Veggies and Mozzarella over marinara sauce.",
             "sizes": "Small, Medium, Large, 20-Inch Slice",
-            "base_price": 1000
+            "base_price": 899
         },
         {
             "id": "item_wickedblend",
@@ -75,7 +78,7 @@ KNOWLEDGE_BASE = {
             "name": "Wicked Blend",
             "description": "Chicken Tikka, Fajita, Smoked Chicken with veggies and mozzarella.",
             "sizes": "Small, Medium, Large",
-            "base_price": 1000
+            "base_price": 949
         },
         {
             "id": "item_arabicranch",
@@ -84,7 +87,7 @@ KNOWLEDGE_BASE = {
             "name": "Arabic Ranch Pizza",
             "description": "Arabic kebab flavors with ranch sauce, veggies, and mozzarella.",
             "sizes": "Small, Medium, Large",
-            "base_price": 1000
+            "base_price": 999
         },
         {
             "id": "item_godspellbeef",
@@ -93,7 +96,7 @@ KNOWLEDGE_BASE = {
             "name": "Godspell Beef Load",
             "description": "Beef sausages, pepperoni, veggies and mozzarella.",
             "sizes": "Small, Medium, Large",
-            "base_price": 1000
+            "base_price": 1049
         },
         
         # Specialty Pizzas
@@ -104,7 +107,7 @@ KNOWLEDGE_BASE = {
             "name": "Dancing Fajita Pizza",
             "description": "Chicken fajita, jalapenos, capsicum and mozzarella.",
             "sizes": "Small, Medium, Large",
-            "base_price": 1000
+            "base_price": 849
         },
         
         # King Crust Pizzas
@@ -115,7 +118,7 @@ KNOWLEDGE_BASE = {
             "name": "King Crust Chicken",
             "description": "Stuffed crust pizza loaded with chicken, cheese, and kabab.",
             "sizes": "Large",
-            "base_price": 1000
+            "base_price": 1599
         },
         
         # Appetizers & Starters
@@ -126,7 +129,7 @@ KNOWLEDGE_BASE = {
             "name": "Garlic Bread",
             "description": "Fresh bread with garlic butter topping.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 299
         },
         {
             "id": "item_megabites",
@@ -135,7 +138,7 @@ KNOWLEDGE_BASE = {
             "name": "Chicken Mega Bites",
             "description": "Crispy fried chicken bites.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 449
         },
         
         # Chicken Wings
@@ -146,7 +149,7 @@ KNOWLEDGE_BASE = {
             "name": "Plain Wings",
             "description": "Crispy & spicy chicken wings.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 549
         },
         {
             "id": "item_habanerowings",
@@ -155,7 +158,7 @@ KNOWLEDGE_BASE = {
             "name": "Habanero Wings",
             "description": "Wings coated with spicy habanero sauce.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 599
         },
         
         # Calzones
@@ -166,7 +169,7 @@ KNOWLEDGE_BASE = {
             "name": "Kebab Zone Calzone",
             "description": "Chapli & Seekh kebab calzone with veggies.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 749
         },
         
         # Pastas
@@ -177,7 +180,7 @@ KNOWLEDGE_BASE = {
             "name": "BBQ Ranch Pasta",
             "description": "Chicken Tikka pasta with BBQ Ranch sauce.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 649
         },
         
         # Kids Meals
@@ -188,7 +191,7 @@ KNOWLEDGE_BASE = {
             "name": "Kiddy Meal",
             "description": "Kids pizza meal with drink & puzzle.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 599
         },
         
         # Desserts
@@ -199,7 +202,7 @@ KNOWLEDGE_BASE = {
             "name": "Chocolate Lava Cake",
             "description": "Warm molten chocolate dessert.",
             "sizes": None,
-            "base_price": 1000
+            "base_price": 349
         },
         
         # Beverages
@@ -210,7 +213,7 @@ KNOWLEDGE_BASE = {
             "name": "Soft Drinks",
             "description": "Chilled soft drinks in multiple flavors.",
             "sizes": "Small, Regular, Large",
-            "base_price": 1000
+            "base_price": 120
         }
     ],
 
@@ -221,7 +224,7 @@ KNOWLEDGE_BASE = {
             "description": "Regular Pizza + Fries + Garlic Bread + Dip",
             "items_included": "Regular Pizza, Crinkle Fries, Garlic Bread (3 pcs), 1 Dip",
             "availability": "All Day",
-            "base_price": 1000
+            "base_price": 799
         },
         {
             "id": "deal_slice_box",
@@ -229,7 +232,7 @@ KNOWLEDGE_BASE = {
             "description": "20-Inch Slice + Fries + Garlic Bread + Dip",
             "items_included": "20 Inch Slice, Crinkle Fries, Garlic Bread, Dip",
             "availability": "All Day",
-            "base_price": 1000
+            "base_price": 649
         },
         {
             "id": "deal_crazy_double_small",
@@ -237,7 +240,7 @@ KNOWLEDGE_BASE = {
             "description": "2 Small Pizzas of your choice.",
             "items_included": "2 Small Pizzas",
             "availability": "All Day",
-            "base_price": 1000
+            "base_price": 1299
         },
         {
             "id": "deal_exclusive",
@@ -245,7 +248,7 @@ KNOWLEDGE_BASE = {
             "description": "Medium Pizza + Lava Cake + Garlic Bread + 2 Dips",
             "items_included": "Medium Pizza, Lava Cake, Garlic Bread, 2 Dips",
             "availability": "All Day",
-            "base_price": 1000
+            "base_price": 1499
         },
         {
             "id": "deal_pepsi_strong",
@@ -253,7 +256,7 @@ KNOWLEDGE_BASE = {
             "description": "Medium Pizza + 2 Small Drinks",
             "items_included": "Medium Pizza, 2 Small Drinks",
             "availability": "All Day",
-            "base_price": 1000
+            "base_price": 1199
         }
     ],
 
@@ -356,6 +359,37 @@ def create_tables(conn: sqlite3.Connection) -> None:
         )
     """)
     
+    # Chat Sessions table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS chat_sessions (
+            session_id TEXT PRIMARY KEY,
+            user_id TEXT,
+            started_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Chat Messages table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS chat_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT NOT NULL,
+            role TEXT NOT NULL,
+            content TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (session_id) REFERENCES chat_sessions(session_id)
+        )
+    """)
+
+    # Chat Summaries table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS chat_summaries (
+            session_id TEXT PRIMARY KEY,
+            summary TEXT,
+            last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (session_id) REFERENCES chat_sessions(session_id)
+        )
+    """)
+    
     conn.commit()
     print("✅ All tables created successfully!")
 
@@ -364,10 +398,14 @@ def seed_data(conn: sqlite3.Connection) -> None:
     """Populate all tables with knowledge base data."""
     cursor = conn.cursor()
     
-    # Clear existing data
+    # Clear existing data using whitelist-validated safe delete
     tables = ["restaurant_info", "menu_categories", "menu_items", "deals", "dips", "crust_types"]
     for table in tables:
-        cursor.execute(f"DELETE FROM {table}")
+        if table in VALID_TABLES:
+            cursor.execute(f"DELETE FROM {table}")
+            logger.debug(f"Cleared table: {table}")
+        else:
+            logger.warning(f"Skipped non-whitelisted table: {table}")
     
     # 1. Seed restaurant info
     rest = KNOWLEDGE_BASE["restaurant"]
@@ -382,7 +420,7 @@ def seed_data(conn: sqlite3.Connection) -> None:
         json.dumps(rest["services"]),
         json.dumps(rest["payment_methods"])
     ))
-    print(f"✅ Seeded restaurant info: {rest['name']}")
+    logger.info(f"Seeded restaurant info: {rest['name']}")
     
     # 2. Seed menu categories
     for cat in KNOWLEDGE_BASE["menu_categories"]:
@@ -390,7 +428,7 @@ def seed_data(conn: sqlite3.Connection) -> None:
             INSERT INTO menu_categories (id, name, type)
             VALUES (?, ?, ?)
         """, (cat["id"], cat["name"], cat["type"]))
-    print(f"✅ Seeded {len(KNOWLEDGE_BASE['menu_categories'])} menu categories")
+    logger.info(f"Seeded {len(KNOWLEDGE_BASE['menu_categories'])} menu categories")
     
     # 3. Seed menu items
     for item in KNOWLEDGE_BASE["menu_items"]:
@@ -406,7 +444,7 @@ def seed_data(conn: sqlite3.Connection) -> None:
             item.get("sizes"),
             item["base_price"]
         ))
-    print(f"✅ Seeded {len(KNOWLEDGE_BASE['menu_items'])} menu items")
+    logger.info(f"Seeded {len(KNOWLEDGE_BASE['menu_items'])} menu items")
     
     # 4. Seed deals
     for deal in KNOWLEDGE_BASE["deals"]:
@@ -421,7 +459,7 @@ def seed_data(conn: sqlite3.Connection) -> None:
             deal["availability"],
             deal["base_price"]
         ))
-    print(f"✅ Seeded {len(KNOWLEDGE_BASE['deals'])} deals")
+    logger.info(f"Seeded {len(KNOWLEDGE_BASE['deals'])} deals")
     
     # 5. Seed dips
     for dip in KNOWLEDGE_BASE["dips"]:
@@ -429,7 +467,7 @@ def seed_data(conn: sqlite3.Connection) -> None:
             INSERT INTO dips (id, name, price)
             VALUES (?, ?, ?)
         """, (dip["id"], dip["name"], dip["price"]))
-    print(f"✅ Seeded {len(KNOWLEDGE_BASE['dips'])} dips")
+    logger.info(f"Seeded {len(KNOWLEDGE_BASE['dips'])} dips")
     
     # 6. Seed crust types
     for crust in KNOWLEDGE_BASE["crust_types"]:
@@ -437,7 +475,7 @@ def seed_data(conn: sqlite3.Connection) -> None:
             INSERT INTO crust_types (name, extra_price)
             VALUES (?, ?)
         """, (crust["name"], crust["extra_price"]))
-    print(f"✅ Seeded {len(KNOWLEDGE_BASE['crust_types'])} crust types")
+    logger.info(f"Seeded {len(KNOWLEDGE_BASE['crust_types'])} crust types")
     
     conn.commit()
 
